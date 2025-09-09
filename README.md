@@ -23,6 +23,7 @@ Please check the env folder for respective env required for the conda enviroment
 1. For the `SISSO_Analysis.ipynb`. the env required will be the `environment_sisso.yml`.
 
 ### Data
+
 0. For exact model weight and seed to make sure the per iteration result is repeatable, please refer to [model weight](OneDriveLink).
 
 1. For more detailed description of the dataset, please check out our [paper](#introduction).
