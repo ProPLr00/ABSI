@@ -279,4 +279,4 @@ def plot_correlation_matrix(X, title, col_list, toSaveFig=True):
     #plt.title("Pearson Correlation Matrix across Features", fontsize=24)
     if toSaveFig:
         save_fig(fig, f"{title}_corr_matrix")
-    plt.show()
+    #plt.show()

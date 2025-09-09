@@ -1,10 +1,18 @@
 import os, time, random, datetime, pickle, warnings
 from pathlib import Path
 
+# For threads and seed control from os
+os.environ["PYTHONHASHSEED"]     = "42"
+os.environ["OMP_NUM_THREADS"]       = "12"   
+os.environ["MKL_NUM_THREADS"]       = "12"   
+os.environ["OPENBLAS_NUM_THREADS"]  = "12"   
+os.environ["NUMEXPR_NUM_THREADS"]   = "12"   
+os.environ["VECLIB_MAXIMUM_THREADS"]= "12"   
+
 import numpy as np
 import pandas as pd
-from scipy.stats import pearsonr, rankdata
-from sklearn.metrics import r2_score, mean_squared_error, ndcg_score
+from scipy.stats import pearsonr
+from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import Matern, WhiteKernel, ConstantKernel as C
@@ -17,35 +25,42 @@ np.set_printoptions(precision=5)
 
 # Main GP function
 def PAM_regression_GP(kappa=1.44, *, save_csv=False, verbose=False,
-                      m_restarts=10, init_train_ind, init_test_ind,
-                      title="gp_run", to_break=True, batch=1):
-    start = time.time()
-    train_ind, test_ind = init_train_ind.copy(), init_test_ind.copy()
+                      m_restarts=10, init_train_ind=None, init_test_ind=None,
+                      title="gp_run", to_break=True, batch=1, seed=42):
+
+    # For fixing seed
+    random.seed(seed)
+    np.random.seed(seed)
+
+    train_ind = sorted(init_train_ind.copy())
+    test_ind  = sorted(init_test_ind.copy())
     results, acq_history = [], []
 
-    # Until candidate exhausted
-    while test_ind:                               
-        X_train, y_train = X[train_ind], Y[train_ind]
-        X_test,  y_test  = X[test_ind],  Y[test_ind]
+    start = time.time()
+    while test_ind:
+        X_train = X[train_ind].astype(np.float64, copy=False)
+        y_train = Y[train_ind].astype(np.float64, copy=False)
+        X_test  = X[test_ind].astype(np.float64,  copy=False)
+        y_test  = Y[test_ind].astype(np.float64,  copy=False)
 
-        # GP fit (Matern-5/2, ARD)
+        # GP fit (Matern-5/2, ARD), reproducible optimizer restarts
         d = X_train.shape[1]
-        kernel = C(1.0, (1e-3, 1e3)) * Matern(length_scale=np.ones(d),
-                   length_scale_bounds=(1e-2, 1e2), nu=2.5) \
-                 + WhiteKernel(noise_level=1e-6,
-                               noise_level_bounds=(1e-9, 1.0))
+        kernel = (C(1.0, (1e-3, 1e3)) *
+                  Matern(length_scale=np.ones(d),
+                         length_scale_bounds=(1e-2, 1e2), nu=2.5)
+                 ) + WhiteKernel(noise_level=1e-6, noise_level_bounds=(1e-9, 1.0))
         gpr = GaussianProcessRegressor(kernel=kernel,
                                        n_restarts_optimizer=m_restarts,
                                        normalize_y=True,
-                                       random_state=3)
+                                       random_state=seed)
         gpr.fit(X_train, y_train)
-
         mu, sigma = gpr.predict(X_test, return_std=True)
 
         # LCB acquisition
         acq = mu - kappa * sigma
-        acq_history.append(acq)                     # store full vector
-        best_local = np.argsort(acq)[:batch]        # minimise LCB
+        acq_history.append(acq)
+        order = np.lexsort((np.arange(acq.size), acq))  
+        best_local = order[:batch]
         next_idx   = [test_ind[i] for i in best_local]
 
         # Diagnostics
@@ -58,22 +73,22 @@ def PAM_regression_GP(kappa=1.44, *, save_csv=False, verbose=False,
                         acq[best_local]])
 
         if verbose:
-            best_true = y_test[best_local]
-            print(f"{len(train_ind):3d} → add {next_idx}, y* = {best_true}")
+            print(f"{len(train_ind):3d} → add {next_idx}, y* = {y_test[best_local]}")
 
+        # Update pools deterministically
         train_ind.extend(next_idx)
         test_ind = [ix for ix in test_ind if ix not in next_idx]
 
+        # Early stop is deterministic once selection is deterministic
         if to_break and (Y[next_idx] == Y_global_max).any():
-            break                                  # early success
+            break
 
     run_min = (time.time() - start) / 60
     saved = "-"
     if save_csv:
         cols = ["train_size", "picked_idx", "mu_pred", "y_true",
                 "r2", "mse", "pear", "p_val", "acq_val"]
-        saved = utils.save_csv(pd.DataFrame(results, columns=cols),
-                                      title=title)
+        saved = utils.save_csv(pd.DataFrame(results, columns=cols), title=title)
 
     return [saved, len(train_ind), np.nan, np.nan,
             np.mean(Y[train_ind]), np.std(Y[train_ind]),
