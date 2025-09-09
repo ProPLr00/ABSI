@@ -44,13 +44,11 @@ def generate_alternating_kmeans_splits(num_splits, X, init_train_size, exclude_i
     Returns:
         splits (list): A list of tuples, where each tuple is (train_indices, test_indices).
     """
-    import random
     random.seed(seed)
     n_samples = X.shape[0]
     all_indices = list(range(n_samples))
     
     # Step 1: Run k-means clustering to form 'init_train_size' clusters.
-    from sklearn.cluster import KMeans
     kmeans = KMeans(n_clusters=init_train_size, random_state=seed)
     clusters = kmeans.fit_predict(X)
     
@@ -92,114 +90,6 @@ def generate_alternating_kmeans_splits(num_splits, X, init_train_size, exclude_i
         splits.append((train_indices, test_indices))
     
     return splits
-
-
-    """
-    Loads and cleans a CSV dataset for regression.
-    
-    Parameters:
-        name (str): Base name of the CSV file (without extension).
-        data_dir (str): Directory where the CSV file is stored. If None, uses the current working directory + '/data/'.
-        encoding (str): File encoding.
-        feature_col_num (int): Index of the first feature column.
-        result_offset (int): The number of columns from the end to treat as non-target.
-                             (target_col = total number of columns - result_offset)
-        target (str): Which target column to use; must be either "yield" or "length".
-    
-    Returns:
-        df_cleaned (pd.DataFrame): Cleaned DataFrame after duplicate removal.
-        X (np.ndarray): Feature matrix.
-        Y (np.ndarray): Regression target vector.
-        clean_feature_list (list): List of feature column names.
-        clean_result_col (str): The target column name used.
-    """
-    # Set directories and file path.
-    root_dir = str(Path(os.getcwd()))
-    if data_dir is None:
-        data_dir = os.path.join(root_dir, "data")
-    file_path = os.path.join(data_dir, f"{name}.csv")
-    
-    # Load the dataset.
-    df = pd.read_csv(file_path, encoding=encoding)
-    print(f"Initial dataset size: {len(df)}")
-    
-    # Define indices for target columns.
-    # yield_col_index is used for duplicate resolution.
-    yield_col_index = len(df.columns) - result_offset - 1
-    length_col_index = len(df.columns) - result_offset
-    
-    # Define feature columns (from feature_col_num up to the yield column).
-    feature_list = df.columns[feature_col_num:yield_col_index]
-    print("Feature list:", list(feature_list))
-    print("Yield column (for duplicate resolution):", df.columns[yield_col_index])
-    
-    # Identify duplicates based on feature columns (ignoring the target column).
-    exact_duplicates = df[df.duplicated(subset=list(feature_list), keep=False)]
-    #print(exact_duplicates)
-    
-    # Check for conflicting target (yield) values among duplicates.
-    duplicates = df.groupby(list(feature_list))[df.columns[yield_col_index]].nunique().reset_index()
-    duplicates_with_diff = duplicates[duplicates[df.columns[yield_col_index]] > 1]
-    #print(duplicates_with_diff)
-    
-    indices_to_keep = []
-    indices_to_remove = []
-    
-    if not duplicates_with_diff.empty:
-        duplicated_rows = df[df[list(feature_list)].apply(tuple, axis=1).isin(
-            duplicates_with_diff[list(feature_list)].apply(tuple, axis=1)
-        )]
-        # Resolve conflicts: always compare using the yield column.
-        for _, group in duplicated_rows.groupby(list(feature_list)):
-            if 1 in group[df.columns[yield_col_index]].values:
-                row_to_keep = group[group[df.columns[yield_col_index]] == 1].iloc[0]
-                indices_to_keep.append(row_to_keep.name)
-                rows_to_remove = group[group[df.columns[yield_col_index]] != 1].index
-                indices_to_remove.extend(rows_to_remove)
-            else:
-                row_to_keep = group.iloc[0]
-                indices_to_keep.append(row_to_keep.name)
-                rows_to_remove = group.iloc[1:].index
-                indices_to_remove.extend(rows_to_remove)
-    
-    # If no conflicting duplicates exist, keep only the first occurrence based on the feature set.
-    indices_to_keep = df.drop_duplicates(subset=list(feature_list), keep="first").index
-    indices_to_remove = df.index.difference(indices_to_keep)
-    
-    # Display the removed rows.
-    removed_rows = df.loc[indices_to_remove]
-    print("\nNumber of Removed Duplicated Rows: ", len(removed_rows))
-    #print(removed_rows)
-    
-    # Create the cleaned DataFrame.
-    df_cleaned = df.drop(indices_to_remove).reset_index(drop=True)
-    
-    # Now select feature columns from the cleaned DataFrame.
-    clean_feature_list = df_cleaned.columns[feature_col_num:yield_col_index]
-    
-    # Choose the target column after cleaning.
-    if target == "yield":
-        clean_result_col = df_cleaned.columns[yield_col_index]
-    elif target == "length":
-        clean_result_col = df_cleaned.columns[length_col_index]
-    else:
-        raise ValueError("target parameter must be either 'yield' or 'length'")
-    
-    X = df_cleaned[clean_feature_list].values
-    Y = df_cleaned[clean_result_col].values
-    
-    non_zero_count = np.count_nonzero(Y)
-    zero_count = (Y == 0).sum()
-    
-    # Print dataset summary.
-    print(f"\nLoading {name} dataset...")
-    print("Features list:", list(clean_feature_list))
-    print("Feature size:", len(X[0]) if len(X) > 0 else 0)
-    print("Dataset size:", len(Y))
-    print(f"Target column: {clean_result_col}\nSum of target values: {np.sum(Y)}\nMean of target values: {np.mean(Y)}")
-    print("Y non-zero:", non_zero_count, "\nY zero:", zero_count)
-    
-    return df_cleaned, X, Y, list(clean_feature_list), clean_result_col
 
 def plot_all_splits_with_clusters_PCA(X, splits, init_train_size, output_filepath, ncols=3, to_save=False):
     """
@@ -269,7 +159,6 @@ def plot_all_splits_with_clusters_tsne(X, splits, init_train_size, output_filepa
         to_save (bool): If True, save the figure.
     """
     # Run k-means on the entire dataset.
-    from sklearn.cluster import KMeans
     kmeans = KMeans(n_clusters=init_train_size, random_state=42)
     clusters = kmeans.fit_predict(X)
     centers = kmeans.cluster_centers_
