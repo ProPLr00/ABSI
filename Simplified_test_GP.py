@@ -108,7 +108,8 @@ to_dir   = root_dir / "results" / "GP-BO_LCB"
 to_dir.mkdir(parents=True, exist_ok=True)
 
 # Data Loading and setting
-df_cleaned, X, Y, feat_cols, tgt_col = utils.load_and_clean_data(DATASET_NAME,target="length")
+name = "CrTeNW_data"
+df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
 
 scaler = StandardScaler()
 X      = scaler.fit_transform(X)

@@ -261,7 +261,7 @@ def PAM_regression(acq_func="EI", save_csv=False, verbose=False, to_break=True, 
     return [saved_title, Nc, mean_y_wo_init, std_y_wo_init, mean_y_w_init, std_y_w_init,
             mean_y_only_init, std_y_only_init, run_time, acq_history]
 
-df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, target="length")
+df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
 
 scaler = StandardScaler()
 X_normalized = scaler.fit_transform(X)

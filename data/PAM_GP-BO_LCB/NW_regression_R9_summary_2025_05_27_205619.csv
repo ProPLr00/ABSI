@@ -1,0 +1,11 @@
+file,N_exp,mean_wo_init,std_wo_init,mean_w_init,std_w_init,mean_init,std_init,run_min
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205349.csv,80,,,6.492,8.562898224316344,10.8205,8.687407251303464,0.39267494678497317
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205411.csv,77,,,6.28961038961039,8.826154674698955,8.4075,10.049119302207533,0.3626045306523641
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205412.csv,23,,,11.430434782608694,10.076352203253297,9.459,9.06527324464078,0.011063214143117268
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205413.csv,24,,,6.451249999999999,9.902184654787044,6.2235,9.098781937710124,0.017841438452402752
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205439.csv,83,,,6.406385542168675,8.500951552452253,7.8545,9.42575486367007,0.4449072241783142
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205453.csv,61,,,5.319180327868853,8.342551658850944,8.9795,8.818957690679778,0.23140004873275757
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205456.csv,31,,,7.683870967741935,9.361980310713614,7.349000000000001,8.365958343190576,0.0405964732170105
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205523.csv,86,,,6.650232558139535,8.467724904730654,9.1685,9.81869964659272,0.4582598090171814
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205553.csv,85,,,6.589176470588234,8.436392623525169,7.7455,8.327433863441966,0.5037913719813029
+/home/common2/snap/snapd-desktop-integration/CrTe_SC/results/NW_regression_R9_LCB_run_2025_05_27_205619.csv,83,,,6.699277108433734,8.422220578768274,8.157,8.783851717783035,0.4301791707674662

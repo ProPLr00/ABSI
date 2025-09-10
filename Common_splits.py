@@ -216,7 +216,7 @@ def plot_all_splits_with_clusters_tsne(X, splits, init_train_size, output_filepa
     
     #plt.show()
 
-df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, target="length")
+df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
 
 scaler = StandardScaler()
 X_normalized = scaler.fit_transform(X)
