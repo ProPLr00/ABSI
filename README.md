@@ -46,7 +46,7 @@ For the ABSI framework:
 - Top Acquisition Sampling - `Extraction of the top sampling score candidates from the overall chunk_metrics_*.csv` - `results/top100_acq_func_*.csv`
 - Mixture of Acquisition Sampling (future extension) - `Extraction of top candidates which recommendation by 2 or more acquisition function` - `results/repeated_candidates_*.csv`
 
-2.  SISSO_Analysis.ipynb : `SISSO Interpretation based on [TorchSISSO](#https://github.com/PaulsonLab/TorchSISSO) library, SI part of this project, consist of 3 parts`
+2.  SISSO_Analysis.ipynb : `SISSO Interpretation based on` [TorchSISSO](#https://github.com/PaulsonLab/TorchSISSO) library`, SI part of this project, consist of 3 parts`
 - Settings - `Basic settings of the SISSO hyperparameter, patches for the TorchSISSO library, and helper functions`
 - Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
 - Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
