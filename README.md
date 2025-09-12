@@ -19,7 +19,9 @@ If you are going to use these model in your research, please cite: (arxiv link)
 
 ### Environment Setup
 Please check the env folder for respective env required for the conda enviroment.
-0. For the `Adaptive_BO.ipynb` and other python files, the env required will be the `enviroment_MT.yml`.
+
+0. For the `Adaptive_BO.ipynb` and other python (.py) files, the env required will be the `enviroment_MT.yml`.
+
 1. For the `SISSO_Analysis.ipynb`. the env required will be the `environment_sisso.yml`.
 
 ### Data
@@ -31,13 +33,30 @@ Please check the env folder for respective env required for the conda enviroment
 ### Code
 0. Code Structure
 - **results** :`folder to store all results and generated figures`
-- **data** : `download data before running code `(see [Data](#code))
+- **data** : `download data before running code `(see [Data](#data))
 - **env** : `for the env setup for different part of the code`(see [Environment Setup](#environment-setup))
-- Adaptive_BO.ipynb : `for the adaptive Bayesian Optimization part.`
-- SISSO_Analysis.ipynb : `for the SISSO analysis part.`
-- common_splits.py:  `for the initial seed generation (common ground), then the pkl file will load for the following`
-- Simplified_test.py - `for choosing and hyperparameter tuning of the Bayesian Acquisition Function.`
-- Simplified_test.py - `for the traditional GP-LCB test.`
+
+For the ABSI framework:
+
+1.  Adaptive_BO.ipynb : `Adaptive Bayesian Machine Learning, AB part of this project, consist of 5 parts`
+- Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
+- Shuffled Model Generation - `Generation of shuffled model based on best model_*.pkl and shuffled dataset` - `results/shuffled_model/shuffled_model_*.pkl`
+- Materials Search Space Generation - `Definition of the materials search space` - `results/MSS_name_*.csv`
+- Materials Search Space Prediction - `Prediction of the shuffled models on the materials search space` - `results/chunk_metrics/chunk_metrics_*.csv`
+- Top Acquisition Sampling - `Extraction of the top sampling score candidates from the overall chunk_metrics_*.csv` - `results/top100_acq_func_*.csv`
+- Mixture of Acquisition Sampling (future extension) - `Extraction of top candidates which recommendation by 2 or more acquisition function` - `results/repeated_candidates_*.csv`
+
+2.  SISSO_Analysis.ipynb : `SISSO Interpretation based on [TorchSISSO](#https://github.com/PaulsonLab/TorchSISSO) library, SI part of this project, consist of 3 parts`
+- Settings - `Basic settings of the SISSO hyperparameter, patches for the TorchSISSO library, and helper functions`
+- Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
+- Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
+
+Selection of the best acquisition function:
+
+3.  common_splits.py:  `Visualization and generation of the common seed splits for comparison of the acquisition functions` - to run: `python common_splits.py`- `data/common_split_*.pkl`
+4. Simplified_test.py - `Performance prediction/testing for the candidate acquisition functions (UF)` - to run: `python Simplified_test.py --UF "acquisition function"` - `results/folder_with_result/*`
+5. Simplified_test_GP.py - `Performance prediction/testing for the traditional GP-LCB test.` - to run: `python Simplified_test_GP.py` - `results/GP_LCB_name/*`
+6. Analysis_Simplified_test.ipynb - `Visualization of the performance for the candidate acquisition function`
 
 
 **Extra Notes:**
