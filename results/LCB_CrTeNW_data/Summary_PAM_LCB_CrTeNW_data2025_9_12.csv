@@ -1,0 +1,11 @@
+file-name,num_experiments,mean_y_wo_init,std_y_wo_init,mean_y_w_init,std_y_w_init,mean_y_only_init,std_y_only_init,run_time
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12.csv,23,,,8.007391304347827,9.91427877505417,5.503,7.861889785541387,1.587000592549642
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_1.csv,25,,,8.429200000000002,9.740304685172841,5.9275,8.581237017470151,2.8169134895006818
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_2.csv,25,,,9.060799999999999,9.510266418981121,7.176,8.826777667982807,2.7541768550872803
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_3.csv,23,,,7.552173913043478,9.817840441068288,5.047,7.717767876789247,1.644645591576894
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_4.csv,39,,,11.803076923076922,9.848207478142628,7.69,9.773229251378481,11.657985023657481
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_5.csv,33,,,10.991212121212122,10.300818666369622,6.476000000000001,8.522515121723165,7.56918246348699
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_6.csv,35,,,10.974285714285715,10.275662866547286,6.4925,8.414794635046064,8.638525835673015
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_7.csv,43,,,11.22232558139535,9.7999669760263,5.397,8.469768060578753,14.261255582173666
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_8.csv,21,,,6.835238095238095,9.283328435861385,5.659,7.838044335164225,0.5158507188161214
+/home/common2/snap/snapd-desktop-integration/Code_Arrangement/results/LCB_CrTeNW_data/PAM_LCB_CrTeNW_data_2025_9_12_9.csv,36,,,10.695833333333333,10.280231129859548,6.338500000000001,9.066572822737376,9.39802819887797
