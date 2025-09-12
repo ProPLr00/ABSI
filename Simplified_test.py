@@ -30,11 +30,8 @@ from_dir = root_dir + "/data/"
 to_dir = root_dir + "/results/"
 
 # Settings
-outer_loop = 10
+outer_loop = 2 # shuffle dataset
 inner_loop = 1
-
-# BO cq_func: "EI". "LCB", "MOCU_mean", "MOCU_std_dev", "rank_score", "hybrid"
-UF = "LCB" 
 
 tuned_parameters = dict(learning_rate=[0.01],
                     n_estimators=[300,500,700],
@@ -47,7 +44,14 @@ tuned_parameters = dict(learning_rate=[0.01],
 # Main BO Functions
 def PAM_regression(acq_func="EI", save_csv=False, verbose=False, to_break=True, title="default_title", batch=1,
                    exploration_ratio = 0.1, kappa_base=1.96, gamma = 0.2, alpha = 0.9, beta = 0.1, m_shuffles=3, 
-                   n_jobs=4, init_train_ind=None, init_test_ind=None):
+                   n_jobs=4, init_train_ind=None, init_test_ind=None,
+                   
+
+                   # Global variables from outside (need to be defined in the global scope
+                     inner_nsplits=10, init_train_size=20, totalSamp=100,
+                     all_ind=None, all_ind_wo_max=None, Y_global_max=None, X=None, Y=None,
+                        
+                   ):
     """
     Unified PAM-guided synthesis function that supports multiple acquisition functions.
 
@@ -250,7 +254,7 @@ def PAM_regression(acq_func="EI", save_csv=False, verbose=False, to_break=True, 
         results = pd.DataFrame(data=results_mat[0:loop_count, :],
                             columns=['sample_size', 'pred_ind', 'best_pred_result', 'y_true',
                                         'r2', 'mse', 'pearson', 'p_value', 'ndcg', 'acq_value'])
-        saved_title = utils.save_csv(results, title=title)
+        saved_title = utils.save_csv_subfolder_UF(results, title=title, UF=acq_func, name=name)
         
     mean_y_wo_init = np.nan
     std_y_wo_init = np.nan
@@ -261,98 +265,127 @@ def PAM_regression(acq_func="EI", save_csv=False, verbose=False, to_break=True, 
     return [saved_title, Nc, mean_y_wo_init, std_y_wo_init, mean_y_w_init, std_y_w_init,
             mean_y_only_init, std_y_only_init, run_time, acq_history]
 
-df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
+def main(UF="EI"):
+    """
+    Main function to execute the PAM-guided synthesis with specified acquisition function.
+    """
+    # Load and clean data
+    df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
 
-scaler = StandardScaler()
-X_normalized = scaler.fit_transform(X)
-X = X_normalized
+    scaler = StandardScaler()
+    X_normalized = scaler.fit_transform(X)
+    X = X_normalized
 
-inner_nsplits = 10
-init_train_size = 20
-totalSamp = X.shape[0]
+    inner_nsplits = 10
+    init_train_size = 20
+    totalSamp = X.shape[0]
 
-# Identify the index of the global maximum from Y
-global_max_ind = np.argmax(Y)
-Y_global_max = Y[global_max_ind]
+    # Identify the index of the global maximum from Y
+    global_max_ind = np.argmax(Y)
+    Y_global_max = Y[global_max_ind]
 
-# Create a full list of indices and exclude the global max for training
-all_ind = list(range(totalSamp))
-all_ind_wo_max = [i for i in all_ind if i != global_max_ind]
+    # Create a full list of indices and exclude the global max for training
+    all_ind = list(range(totalSamp))
+    all_ind_wo_max = [i for i in all_ind if i != global_max_ind]
 
-# Load the common splits from file (assume they were generated earlier) for comparison
-splits_filepath = os.path.join(from_dir, "common_splits_1.pkl")
-with open(splits_filepath, 'rb') as f:
-    common_splits = pickle.load(f)
+    # Load the common splits from file (assume they were generated earlier) for comparison
+    splits_filepath = os.path.join(from_dir, "common_splits_1.pkl")
+    with open(splits_filepath, 'rb') as f:
+        common_splits = pickle.load(f)
 
-### For random generation of split, please use here ###
-'''# Instead of loading common splits, generate them randomly:
-common_splits = []
-num_splits = 10  # number of random splits
+    ### For random generation of split, please use here ###
+    '''# Instead of loading common splits, generate them randomly:
+    common_splits = []
+    num_splits = 10  # number of random splits
 
-for _ in range(num_splits):
-    # Sample training indices from all_ind_wo_max so that the global max is never in the training set
-    train_ind = random.sample(all_ind_wo_max, init_train_size)
-    # Test indices are generated from all_ind, so the global max (global_max_ind) is included
-    test_ind = [x for x in all_ind if x not in train_ind]
-    common_splits.append((train_ind, test_ind))'''
+    for _ in range(num_splits):
+        # Sample training indices from all_ind_wo_max so that the global max is never in the training set
+        train_ind = random.sample(all_ind_wo_max, init_train_size)
+        # Test indices are generated from all_ind, so the global max (global_max_ind) is included
+        test_ind = [x for x in all_ind if x not in train_ind]
+        common_splits.append((train_ind, test_ind))'''
 
-# Print the generated splits for verification
-for split in common_splits:
-    print(split)
+    # Print the generated splits for verification
+    '''for split in common_splits:
+        print(split)'''
 
-# Save the splits to a file.
-today = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
-splits_filepath = os.path.join(from_dir, f"common_splits_random_{today}.pkl")
-with open(splits_filepath, 'wb') as f:
-    pickle.dump(common_splits, f)
-print("Initial splits saved to:", splits_filepath)
+    # Save the splits to a file.
+    today = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
+    splits_filepath = os.path.join(from_dir, f"Common_splits_{UF}_{name}_{today}.pkl")
+    with open(splits_filepath, 'wb') as f:
+        pickle.dump(common_splits, f)
+    print("Initial splits saved to:", splits_filepath)
 
-print('start PAM for ', str(outer_loop * inner_loop * len(common_splits)), ' times...')
+    print('start PAM for ', str(outer_loop * inner_loop * len(common_splits)), ' times...')
 
-all_acq_history = []  # Aggregate acquisition history from each run
-res_arr = []          # Aggregate summary results (without full acquisition history)
-all_results = []      # Aggregate full results from each run
+    all_acq_history = []  # Aggregate acquisition history from each run
+    res_arr = []          # Aggregate summary results (without full acquisition history)
+    all_results = []      # Aggregate full results from each run
 
-# Outer and inner loops
-for j in range(outer_loop):
-    init_time_outer = time.time()
-    for i in range(inner_loop): # As inner loop always = 1 so can ignore its effect here, but maintain for future application/usage
-        loop_count = j * inner_loop + i        
-        # Iterate over each common split
-        for split in common_splits:
-            train_ind, test_ind = split        
-            result = PAM_regression(
-                acq_func= UF,  
-                save_csv=True, 
-                verbose=True, 
-                to_break=True, 
-                title=name + f"_{UF}_random_run", 
-                batch=1, 
-                exploration_ratio=0.1, #for EI
-                kappa_base=1.44, # for LCB
-                #gamma = (1.44/1.282) - 1,   # for hybrid LCB_rank
-                alpha = 0.9, beta = 0.1, #for rank score
-                m_shuffles=10, #increase for more initial dataset shuffling
-                n_jobs=6,
-                init_train_ind=train_ind, 
-                init_test_ind=test_ind
-            )
-            all_results.append(result)
-            res_arr.append(result[:-1])
-            all_acq_history.append(result[-1])
-            print(str(loop_count), ' -> ', str(result[0]), '  time=', result[-2])
-   
-    PAM_df = pd.DataFrame(data=res_arr, columns=[
-        'file-name','num_experiments','mean_y_wo_init','std_y_wo_init',
-        'mean_y_w_init','std_y_w_init','mean_y_only_init','std_y_only_init','run_time'
-    ])
-    saved_path = utils.save_csv(PAM_df, title=name + str(inner_loop) + 'times_')
+    # Outer and inner loops
+    for j in range(outer_loop):
+        init_time_outer = time.time()
+        for i in range(inner_loop): # As inner loop always = 1 so can ignore its effect here, but maintain for future application/usage
+            loop_count = j * inner_loop + i        
+            # Iterate over each common split
+            for split in common_splits:
+                train_ind, test_ind = split        
+                result = PAM_regression(
+                    acq_func= UF,  
+                    save_csv=True, 
+                    verbose=True, 
+                    to_break=True, 
+                    title=f"PAM_{UF}_{name}_", 
+                    batch=1, 
+                    exploration_ratio=0.1, #for EI
+                    kappa_base=1.44, # for LCB
+                    #gamma = (1.44/1.282) - 1,   # for hybrid LCB_rank
+                    alpha = 0.9, beta = 0.1, #for rank score
+                    m_shuffles=10, #increase for more initial dataset shuffling
+                    n_jobs=6,
+                    init_train_ind=train_ind, 
+                    init_test_ind=test_ind,
+
+                    # Global variables from outside
+                    inner_nsplits=inner_nsplits,
+                    init_train_size=init_train_size,
+                    totalSamp=totalSamp,
+                    all_ind=all_ind,
+                    all_ind_wo_max=all_ind_wo_max,
+                    Y_global_max=Y_global_max,
+                    X=X,
+                    Y=Y
+
+                )
+                all_results.append(result)
+                res_arr.append(result[:-1])
+                all_acq_history.append(result[-1])
+                print(str(loop_count), ' -> ', str(result[0]), '  time=', result[-2])
     
-    # Save results
-    now_time = datetime.datetime.now()
-    today = now_time.strftime("%Y_%m_%d_%H%M%S")
-    acq_history_path = os.path.join(to_dir, name + f"{UF}_acq_history_{today}.pkl")
-    with open(acq_history_path, 'wb') as f:
-        pickle.dump(all_acq_history, f)
-    print("Acquisition history saved to:", acq_history_path)
-    print('Total time for outer loop iteration:', str((time.time() - init_time_outer) / 3600), ' hrs  >>-------saved')
+        PAM_df = pd.DataFrame(data=res_arr, columns=[
+            'file-name','num_experiments','mean_y_wo_init','std_y_wo_init',
+            'mean_y_w_init','std_y_w_init','mean_y_only_init','std_y_only_init','run_time'
+        ])
+        saved_path = utils.save_csv_subfolder_UF(PAM_df, title=f"Summary_PAM_{UF}_{name}_", UF=UF, name=name)
+        
+        # Save results
+        now_time = datetime.datetime.now()
+        today = now_time.strftime("%Y_%m_%d_%H%M%S")
+        subfolder_path = os.path.join(to_dir, f"{UF}_{name}")
+        acq_history_path = os.path.join(subfolder_path, f"Acqhist_PAM_{UF}_{name}_{today}.pkl")
+        with open(acq_history_path, 'wb') as f:
+            pickle.dump(all_acq_history, f)
+        print("Acquisition history saved to:", acq_history_path)
+        print('Total time for outer loop iteration:', str((time.time() - init_time_outer) / 3600), ' hrs  >>-------saved')
+
+if __name__ == "__main__":
+    # BO acq_func: "EI". "LCB", "MOCU_mean", "MOCU_std_dev", "rank_score", "hybrid"
+
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--UF', type=str, default="EI", help='Acquisition function to use')
+    args = parser.parse_args()
+    UF = args.UF
+
+    assert UF in ["EI", "LCB", "MOCU_mean", "MOCU_std_dev", "rank_score"], "Unknown acquisition function"
+    main(UF=UF)

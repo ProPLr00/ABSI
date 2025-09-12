@@ -1,2 +1,0 @@
-sample_size,pred_ind,best_pred_result,y_true,r2,mse,pearson,p_value,ndcg,acq_value
-20,[66],[13.61636],[30.36],0.5681054137919057,35.38385114147202,0.7678763963976326,1.4343081927658696e-15,0.0,[-23.79845]

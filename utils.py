@@ -8,6 +8,9 @@ from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+UF = 'EI'
+name = 'CrTeNW_data'
+
 root_dir = str(Path(os.getcwd()))
 from_dir = root_dir + '/data/'
 to_dir = root_dir + '/results/'
@@ -26,6 +29,23 @@ def format_title(to_dir, title, fileEtd):
         to_save_title = to_dir+title+'_'+str(i)+fileEtd
         i= i+1
     return to_save_title
+
+def format_title_subfolder_UF(to_dir: str, title: str, *, UF: str, name: str, file_ext: str = ".csv") -> str:
+    """Build a unique save path under {to_dir}/{UF}_{name}/"""
+    title2 = update_title_w_date(title)
+    subfolder_path = os.path.join(to_dir, f"{UF}_{name}")
+    os.makedirs(subfolder_path, exist_ok=True)
+
+    filename = f"{title2}{file_ext}"
+    full_path = os.path.join(subfolder_path, filename)
+
+    i = 1
+    while os.path.exists(full_path):
+        filename = f"{title2}_{i}{file_ext}"
+        full_path = os.path.join(subfolder_path, filename)
+        i += 1
+
+    return full_path
 
 def set_fig_fonts(SMALL_SIZE=22, MEDIUM_SIZE=24,BIGGER_SIZE = 26):
     plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
@@ -215,6 +235,14 @@ def save_csv(data, title, ind=False):
     data.to_csv(to_save_title, index=ind)
     print('Successfully saved:', to_save_title)
     return to_save_title
+
+def save_csv_subfolder_UF(data, *, title: str, UF: str, name: str,
+                          ind: bool = False, out_dir: str = None) -> str:
+    dir_eff = out_dir if out_dir is not None else to_dir
+    path = format_title_subfolder_UF(dir_eff, title, UF=UF, name=name, file_ext=".csv")
+    data.to_csv(path, index=ind)
+    print("Successfully saved:", path)
+    return path
 
 from matplotlib.colors import Normalize
 from matplotlib.colors import LinearSegmentedColormap
