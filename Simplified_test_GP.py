@@ -26,8 +26,7 @@ np.set_printoptions(precision=5)
 # ── Parameters ─────────────────────────────────────────────────────────
 name  = "CrTeNW_data"
 UF    = "GP"
-KAPPA = 1.44
-OUTER_LOOP, INNER_LOOP, INIT_TRAIN_SZ = 2, 1, 20
+outer_loop= 10
 
 root_dir = Path.cwd()
 from_dir = root_dir / "data"
@@ -174,15 +173,17 @@ with splits_out.open('wb') as f:
 print("Initial splits saved to:", splits_out)
 
 # ── Loops ──────────────────────────────────────────────────────────────
-print(f"Start GP-PAM for {OUTER_LOOP * INNER_LOOP * len(common_splits)} runs…")
+inner_loop = 1      # Replace common_split for randomly select initial seeding point
+
+print(f"Start GP-PAM for {outer_loop * inner_loop * len(common_splits)} runs…")
 all_acq_hist, res_arr, all_results = [], [], []
 
-for j in range(OUTER_LOOP):
+for j in range(outer_loop):
     t_outer = time.time()
-    for i in range(INNER_LOOP):
+    for i in range(inner_loop):
         for train_ind, test_ind in common_splits:
             res = PAM_regression_GP(
-                kappa=KAPPA,
+                kappa=1.44,
                 save_csv=True,
                 verbose=True,
                 init_train_ind=train_ind,

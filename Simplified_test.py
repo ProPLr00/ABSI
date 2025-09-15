@@ -23,6 +23,7 @@ warnings.filterwarnings("ignore")
 np.random.seed(3)
 np.set_printoptions(precision=5)
 
+# Name of the data sheet in .csv form under from_dir
 name = "CrTeNW_data"
 
 root_dir = str(Path(os.getcwd()))
@@ -30,8 +31,7 @@ from_dir = root_dir + "/data/"
 to_dir = root_dir + "/results/"
 
 # Settings
-outer_loop = 2 # shuffle dataset
-inner_loop = 1
+outer_loop = 10 # shuffle dataset
 
 tuned_parameters = dict(learning_rate=[0.01],
                     n_estimators=[300,500,700],
@@ -269,7 +269,7 @@ def main(UF="EI"):
     """
     Main function to execute the PAM-guided synthesis with specified acquisition function.
     """
-    # Load and clean data
+    # Load the data, please specify if you are using a different dir than from_dir with data_dir = your_dir
     df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
 
     scaler = StandardScaler()
@@ -321,6 +321,7 @@ def main(UF="EI"):
     all_acq_history = []  # Aggregate acquisition history from each run
     res_arr = []          # Aggregate summary results (without full acquisition history)
     all_results = []      # Aggregate full results from each run
+    inner_loop = 1        # Replace common_split for randomly select initial seeding point
 
     # Outer and inner loops
     for j in range(outer_loop):

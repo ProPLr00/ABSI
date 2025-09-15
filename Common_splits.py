@@ -14,6 +14,11 @@ from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
 import utils
 
+# Setting of the seed data point in the common_splits
+num_splits = 10
+init_train_size = 20
+
+# Name of the data sheet in .csv form under from_dir
 name = "CrTeNW_data"
 
 root_dir = str(Path(os.getcwd()))
@@ -216,16 +221,15 @@ def plot_all_splits_with_clusters_tsne(X, splits, init_train_size, output_filepa
     
     #plt.show()
 
+# Load the data, please specify if you are using a different dir than from_dir with data_dir = your_dir
 df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0,target="length")
 
 scaler = StandardScaler()
 X_normalized = scaler.fit_transform(X)
 X = X_normalized
 
-inner_nsplits = 10
-init_train_size = 20
+# Excluding the top target within the data from being sample out as the seed datapoint
 totalSamp = X.shape[0]
-
 Y_global_max = np.max(Y)
 idx_global_max = np.argmax(Y)
 all_ind = np.random.permutation(list(range(0,totalSamp)))
@@ -233,7 +237,6 @@ all_ind_wo_max = list(range(0,totalSamp))
 all_ind_wo_max.remove(0)
 
 # Generate Common Split with kmeans-clustering - avoiding concentrated sampling
-num_splits = 10
 common_splits = generate_alternating_kmeans_splits(num_splits, X, init_train_size, exclude_index=idx_global_max, seed=42)
 
 # Save the splits into pkl files

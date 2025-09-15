@@ -28,14 +28,16 @@ warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 import utils
 
-save = True
+# Name of the data sheet in .csv form under from_dir
 name = "CrTeNW_data"
 
 root_dir = str(Path(os.getcwd()))
 from_dir = root_dir + "/data/"
 to_dir = root_dir + "/results/"
+save = True
 
-df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=1, target="length")
+# Load the data, please specify if you are using a different dir than from_dir with data_dir = your_dir
+df_cleaned, X, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(name, feature_col_num=0, target="length")
 
 def test(y_pred, y_true, k=None, verbose=False):
     """
@@ -106,14 +108,14 @@ def compute_mean_std(X):
         std = np.std(arr)
         print(feature_list[i],':   mean= ',mean,' std= ',std)
 
+# Plot the correlation matrix
 title = name
 utils.plot_correlation_matrix(X, title, clean_feature_list,toSaveFig=save)
 
-# setup
+# Adjust running setup
 verbose=False
 n_jobs = 6
 save_csv = True
-
 
 # cross validation setup
 Ntrials = 10
@@ -128,7 +130,6 @@ svr_mat = np.zeros((tot_count, 5))
 xgb_mat = np.zeros((tot_count, 5))
 mlp_mat = np.zeros((tot_count, 5))
 gpr_mat = np.zeros((tot_count, 5))
-
 
 for i in range(Ntrials):
     init_time = time.time()
@@ -230,7 +231,6 @@ for i in range(Ntrials):
             print('xgb -',xgb_mat[count])
     print((time.time()-init_time)/60, ' min')
 
-
 # Update DataFrames
 mlp_results = pd.DataFrame(data=mlp_mat, columns=['r2', 'mse', 'pear', 'pear_p_val', 'ndcg'])
 gpr_results = pd.DataFrame(data=gpr_mat, columns=['r2', 'mse', 'pear', 'pear_p_val', 'ndcg'])
@@ -281,7 +281,7 @@ ylabels  = [r'$R^2$', 'MSE', r'$r$', 'nDCG']
 
 plt.rcdefaults()
 
-# 2) Your data & settings
+# Saving Metrics
 metrics = {
     r'$R^2$':   r2_results,
     'MSE':      mse_results,
@@ -302,15 +302,15 @@ xlimits = {
     'nDCG'  : (0.7, 1)
 }
 
-# 3) Create one figure with a 2×2 layout
+# Plotting in 2x2 pattern
 fig, axes = plt.subplots(2, 2, figsize=(12, 8), constrained_layout=True)
 axes = axes.flatten()
 
-# 4) Loop over each metric → one subplot each
+# Loop over each metric with one subplot each
 for ax, (xlabel, df) in zip(axes, metrics.items()):
-    # prepare data in model order
+    # Prepare data in model order
     data = [df[model] for model in models]
-    # draw horizontal boxplot with colored patches
+    # Draw horizontal boxplot with colored patches
     bp = ax.boxplot(data,
                     labels=models,
                     vert=False,
@@ -319,13 +319,13 @@ for ax, (xlabel, df) in zip(axes, metrics.items()):
     for patch, model in zip(bp['boxes'], models):
         patch.set_facecolor(colors[model])
         patch.set_edgecolor('black')
-    # axis limits, labels, title
+    # Axis limits, labels, title
     ax.set_xlim(xlimits[xlabel])
     ax.set_xlabel(xlabel)
     ax.set_yticklabels(models)
     ax.set_title(f'{xlabel} distribution')
 
-# 5) Overall title and show
+# Overall title and show
 fig.suptitle('Comparison of Model Metrics', fontsize=16, y=1.02)
 filename = os.path.join(to_dir, "model_metrics_boxplots.png")
 fig.savefig(filename, dpi=300, bbox_inches="tight")
