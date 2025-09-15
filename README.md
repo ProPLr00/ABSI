@@ -36,7 +36,7 @@ Please check the env folder for respective env required for the conda enviroment
 - **data** : `download data before running code `(see [Data](#data)), `if you are using another dataset please put inside and change the **name** in the respective python files`
 - **env** : `for the env setup for different part of the code`(see [Environment Setup](#environment-setup))
 
-0. ABSI framework:
+1. ABSI framework:
 
 - Adaptive_BO.ipynb : `Adaptive Bayesian Machine Learning, AB part of this project, consist of 5 parts`
   - Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
@@ -51,7 +51,7 @@ Please check the env folder for respective env required for the conda enviroment
   - Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
   - Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
 
-1. Selection of the best acquisition function:
+2. Selection of the best acquisition function:
 
 - common_splits.py:  `Visualization and generation of the common seed splits for comparison of the acquisition functions; adjust num_splits for the number of common splits; adjust the init_train_size for the size of each splits` - to run: `python common_splits.py`- `data/common_split_*.pkl`
 
