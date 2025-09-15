@@ -36,7 +36,7 @@ Please check the env folder for respective env required for the conda enviroment
 - **data** : `download data before running code `(see [Data](#data)), `if you are using another dataset please put inside and change the **name** in the respective python files`
 - **env** : `for the env setup for different part of the code`(see [Environment Setup](#environment-setup))
 
-0. For the ABSI framework:
+0. ABSI framework:
 
 - Adaptive_BO.ipynb : `Adaptive Bayesian Machine Learning, AB part of this project, consist of 5 parts`
   - Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
