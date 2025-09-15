@@ -36,34 +36,34 @@ Please check the env folder for respective env required for the conda enviroment
 - **data** : `download data before running code `(see [Data](#data)), `if you are using another dataset please put inside and change the **name** in the respective python files`
 - **env** : `for the env setup for different part of the code`(see [Environment Setup](#environment-setup))
 
-For the ABSI framework:
+0. For the ABSI framework:
 
-0.  Adaptive_BO.ipynb : `Adaptive Bayesian Machine Learning, AB part of this project, consist of 5 parts`
-- Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
-- Shuffled Model Generation - `Generation of shuffled model based on best model_*.pkl and shuffled dataset` - `results/shuffled_model/shuffled_model_*.pkl`
-- Materials Search Space Generation - `Definition of the materials search space` - `results/MSS_name_*.csv`
-- Materials Search Space Prediction - `Prediction of the shuffled models on the materials search space` - `results/chunk_metrics/chunk_metrics_*.csv`
-- Top Acquisition Sampling - `Extraction of the top sampling score candidates from the overall chunk_metrics_*.csv` - `results/top100_acq_func_*.csv`
-- Mixture of Acquisition Sampling (future extension) - `Extraction of top candidates which recommendation by 2 or more acquisition function` - `results/repeated_candidates_*.csv`
+- Adaptive_BO.ipynb : `Adaptive Bayesian Machine Learning, AB part of this project, consist of 5 parts`
+- - Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
+- - Shuffled Model Generation - `Generation of shuffled model based on best model_*.pkl and shuffled dataset` - `results/shuffled_model/shuffled_model_*.pkl`
+- - Materials Search Space Generation - `Definition of the materials search space` - `results/MSS_name_*.csv`
+- - Materials Search Space Prediction - `Prediction of the shuffled models on the materials search space` - `results/chunk_metrics/chunk_metrics_*.csv`
+- - Top Acquisition Sampling - `Extraction of the top sampling score candidates from the overall chunk_metrics_*.csv` - `results/top100_acq_func_*.csv`
+- - Mixture of Acquisition Sampling (future extension) - `Extraction of top candidates which recommendation by 2 or more acquisition function` - `results/repeated_candidates_*.csv`
 
-0.  SISSO_Analysis.ipynb : `SISSO Interpretation based on` [TorchSISSO](https://github.com/PaulsonLab/TorchSISSO) library`, SI part of this project, consist of 3 parts`
-- Settings - `Basic settings of the SISSO hyperparameter, patches for the TorchSISSO library, and helper functions`
-- Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
-- Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
+- SISSO_Analysis.ipynb : `SISSO Interpretation based on` [TorchSISSO](https://github.com/PaulsonLab/TorchSISSO) library`, SI part of this project, consist of 3 parts`
+- - Settings - `Basic settings of the SISSO hyperparameter, patches for the TorchSISSO library, and helper functions`
+- - Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
+- - Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
 
-Selection of the best acquisition function:
+0. Selection of the best acquisition function:
 
-0.  common_splits.py:  `Visualization and generation of the common seed splits for comparison of the acquisition functions; adjust num_splits for the number of common splits; adjust the init_train_size for the size of each splits` - to run: `python common_splits.py`- `data/common_split_*.pkl`
+- common_splits.py:  `Visualization and generation of the common seed splits for comparison of the acquisition functions; adjust num_splits for the number of common splits; adjust the init_train_size for the size of each splits` - to run: `python common_splits.py`- `data/common_split_*.pkl`
 
-0. Simplified_test.py - `Performance prediction/testing for the candidate acquisition functions (UF); adjust outer_loop for the number of repetition` - to run: `python Simplified_test.py --UF "acquisition function"` - `results/folder_with_result/*`
+- Simplified_test.py - `Performance prediction/testing for the candidate acquisition functions (UF); adjust outer_loop for the number of repetition` - to run: `python Simplified_test.py --UF "acquisition function"` - `results/folder_with_result/*`
 
-0. Simplified_test_GP.py - `Performance prediction/testing for the traditional GP-LCB test; ; adjust outer_loop for the number of repetition` - to run: `python Simplified_test_GP.py` - `results/GP_LCB_name/*`
+- Simplified_test_GP.py - `Performance prediction/testing for the traditional GP-LCB test; ; adjust outer_loop for the number of repetition` - to run: `python Simplified_test_GP.py` - `results/GP_LCB_name/*`
 
-0. Analysis_Simplified_test.ipynb - `Visualization of the performance for the candidate acquisition function`
+- Analysis_Simplified_test.ipynb - `Visualization of the performance for the candidate acquisition function`
 
 
 **Extra Notes:**
 
-0. ModelSelection_Regression.py - `Adjusted based on the` [ML-guided-material-synthesis](https://github.com/MSwML/ML-guided-material-synthesis) `for the regression model selection, adjust the settings inside for another usage`.
+- ModelSelection_Regression.py - `Adjusted based on the` [ML-guided-material-synthesis](https://github.com/MSwML/ML-guided-material-synthesis) `for the regression model selection, adjust the settings inside for another usage`.
 
-0.  For random seed generation, directly run the simplified_test_*.py will do (check the commented section in the .py files).
+- For random seed generation, directly run the simplified_test_*.py will do (check the commented section in the .py files).
