@@ -39,19 +39,19 @@ Please check the env folder for respective env required for the conda enviroment
 0. For the ABSI framework:
 
 - Adaptive_BO.ipynb : `Adaptive Bayesian Machine Learning, AB part of this project, consist of 5 parts`
-- - Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
-- - Shuffled Model Generation - `Generation of shuffled model based on best model_*.pkl and shuffled dataset` - `results/shuffled_model/shuffled_model_*.pkl`
-- - Materials Search Space Generation - `Definition of the materials search space` - `results/MSS_name_*.csv`
-- - Materials Search Space Prediction - `Prediction of the shuffled models on the materials search space` - `results/chunk_metrics/chunk_metrics_*.csv`
-- - Top Acquisition Sampling - `Extraction of the top sampling score candidates from the overall chunk_metrics_*.csv` - `results/top100_acq_func_*.csv`
-- - Mixture of Acquisition Sampling (future extension) - `Extraction of top candidates which recommendation by 2 or more acquisition function` - `results/repeated_candidates_*.csv`
+  - Best Model Hyperparameter Generation - `Visualization of data and generation of best hyperparameter through nested-cross validation` - `results/best_model/best_model_*.pkl`
+  - Shuffled Model Generation - `Generation of shuffled model based on best model_*.pkl and shuffled dataset` - `results/shuffled_model/shuffled_model_*.pkl`
+  - Materials Search Space Generation - `Definition of the materials search space` - `results/MSS_name_*.csv`
+  - Materials Search Space Prediction - `Prediction of the shuffled models on the materials search space` - `results/chunk_metrics/chunk_metrics_*.csv`
+  - Top Acquisition Sampling - `Extraction of the top sampling score candidates from the overall chunk_metrics_*.csv` - `results/top100_acq_func_*.csv`
+  - Mixture of Acquisition Sampling (future extension) - `Extraction of top candidates which recommendation by 2 or more acquisition function` - `results/repeated_candidates_*.csv`
 
 - SISSO_Analysis.ipynb : `SISSO Interpretation based on` [TorchSISSO](https://github.com/PaulsonLab/TorchSISSO) library`, SI part of this project, consist of 3 parts`
-- - Settings - `Basic settings of the SISSO hyperparameter, patches for the TorchSISSO library, and helper functions`
-- - Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
-- - Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
+  - Settings - `Basic settings of the SISSO hyperparameter, patches for the TorchSISSO library, and helper functions`
+  - Leave-One-Out Cross Validation - `Generation of the best hyperparameter through LOOCV and preliminary descriptor frequency analysis` - `results/sisso_loocv_*.csv`
+  - Out-of-Bag Cross Validation - `Selection of best descriptor based from extra-OOBCV based on the estimation of how well the descriptor generalized` - `results/sisso_bootstrap*.csv`
 
-0. Selection of the best acquisition function:
+1. Selection of the best acquisition function:
 
 - common_splits.py:  `Visualization and generation of the common seed splits for comparison of the acquisition functions; adjust num_splits for the number of common splits; adjust the init_train_size for the size of each splits` - to run: `python common_splits.py`- `data/common_split_*.pkl`
 
