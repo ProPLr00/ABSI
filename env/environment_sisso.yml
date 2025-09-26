@@ -8,13 +8,13 @@ channels:
 dependencies:
   - python=3.9
   - impi-devel
-  - pip  
+  - pip
+  - conda-libmamba-solver=25.4.0 
 
   - pip:
     - brotli==1.1.0
     - cffi==1.17.1
     - colorama==0.4.6
-    - conda-libmamba-solver==25.4.0
     - h2==4.2.0
     - ipykernel==6.29.5
     - jaraco.collections==5.1.0

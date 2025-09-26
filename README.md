@@ -55,7 +55,7 @@ Please check the env folder for respective env required for the conda enviroment
 
 - Common_splits.py:  `Visualization and generation of the common seed splits for comparison of the acquisition functions; adjust num_splits for the number of common splits; adjust the init_train_size for the size of each splits` - to run: `python common_splits.py`- `data/common_split_*.pkl`
 
-- Simplified_test.py - `Performance prediction/testing for the candidate acquisition functions (UF); adjust outer_loop for the number of repetition` - to run: `python Simplified_test.py --UF "acquisition function"` - `results/folder_with_result/*`
+- Simplified_test.py - `Performance prediction/testing for the candidate acquisition functions (UF); adjust outer_loop for the number of repetition` - choose 1 acquisition function to run: `python Simplified_test.py --UF EI; python Simplified_test.py --UF LCB; python Simplified_test.py --UF MOCU_mean; python Simplified_test.py --UF MOCU_std_dev; python Simplified_test.py --UF rank_score;` - `results/folder_with_result/*`
 
 - Simplified_test_GP.py - `Performance prediction/testing for the traditional GP-LCB test; ; adjust outer_loop for the number of repetition` - to run: `python Simplified_test_GP.py` - `results/GP_LCB_name/*`
 
