@@ -316,13 +316,14 @@ def main(UF="EI"):
         pickle.dump(common_splits, f)
     print("Initial splits saved to:", splits_filepath)
 
-    print('start PAM for ', str(outer_loop * inner_loop * len(common_splits)), ' times...')
 
     all_acq_history = []  # Aggregate acquisition history from each run
     res_arr = []          # Aggregate summary results (without full acquisition history)
     all_results = []      # Aggregate full results from each run
     inner_loop = 1        # Replace common_split for randomly select initial seeding point
 
+    print('start PAM for ', str(outer_loop * inner_loop * len(common_splits)), ' times...')
+    
     # Outer and inner loops
     for j in range(outer_loop):
         init_time_outer = time.time()
