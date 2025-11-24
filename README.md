@@ -57,7 +57,7 @@ Please check the env folder for respective env required for the conda enviroment
 
 - Simplified_test.py - `Performance prediction/testing for the candidate acquisition functions (UF); adjust outer_loop for the number of repetition` - choose 1 acquisition function to run: `python Simplified_test.py --UF EI; python Simplified_test.py --UF LCB; python Simplified_test.py --UF MOCU_mean; python Simplified_test.py --UF MOCU_std_dev; python Simplified_test.py --UF rank_score;` - `results/folder_with_result/*`
 
-- Simplified_test_GP.py - `Performance prediction/testing for the traditional GP-LCB test; ; adjust outer_loop for the number of repetition` - to run: `python Simplified_test_GP.py` - `results/GP_LCB_name/*`
+- Simplified_test_baseline.py - `Performance prediction/testing for ensembled RF, ensembled XGBoost, emsembled SVR as probablistic surrogates as compared with traditional GP-LCB test; adjust outer_loop for the number of repetition` - to run: `python Simplified_test_baseline.py --model GP; python Simplified_test_baseline.py --model RFEns; python Simplified_test_baseline.py --model XGBEns; python Simplified_test_baseline.py --model SVMEns` - `results/model_name/*`
 
 - Analysis_Simplified_test.ipynb - `Visualization of the performance for the candidate acquisition function`
 
