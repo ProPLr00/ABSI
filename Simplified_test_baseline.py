@@ -126,19 +126,17 @@ def PAM_regression_SVMEns(kappa=1.44, *, save_csv=False, verbose=False,
     start = time.time(); loop_count = 0; j = 0
 
     while test_ind:
-        # --- use raw arrays; scaling is inside the Pipeline ---
         X_tr_raw = X_raw[train_ind].astype(np.float64, copy=False)
         X_te_raw = X_raw[test_ind].astype(np.float64,  copy=False)
         y_train  = Y[train_ind].astype(np.float64,    copy=False)
         y_test   = Y[test_ind].astype(np.float64,     copy=False)
         last_max = float(np.max(y_train))
 
-        # --- per-iteration hyperparameter search (guard small n) ---
+        # per-iteration hyperparameter search
         n_tr = len(train_ind)
         cv_splits = max(2, min(inner_nsplits, n_tr))
         inner_cv = KFold(n_splits=cv_splits, shuffle=True, random_state=j)
 
-        # Pipeline: scale → SVR
         svr_rbf = Pipeline([
             ('sc', StandardScaler()),
             ('reg', SVR())
@@ -149,13 +147,13 @@ def PAM_regression_SVMEns(kappa=1.44, *, save_csv=False, verbose=False,
             param_grid=tuned_parameters,
             cv=inner_cv,
             scoring='r2',
-            verbose=int(bool(verbose)),  # 0 or 1 keeps logs reasonable
+            verbose=int(bool(verbose)),
             n_jobs=n_jobs
         )
         gs.fit(X_tr_raw, y_train)
-        best_pipe = gs.best_estimator_  # already a fitted Pipeline
+        best_pipe = gs.best_estimator_ 
 
-        # --- bootstrap ensemble for μ, σ using the best hyperparams ---
+        # bootstrap ensemble for μ, σ using the best hyperparams 
         preds = []
         for m in range(M):
             boot_idx = rng.choice(n_tr, size=n_tr, replace=True)
@@ -163,22 +161,22 @@ def PAM_regression_SVMEns(kappa=1.44, *, save_csv=False, verbose=False,
             model_m.fit(X_tr_raw[boot_idx], y_train[boot_idx])
             preds.append(model_m.predict(X_te_raw))
 
-        pred_matrix = np.vstack(preds)                # (M, n_test)
-        mu, sigma   = _ensemble_mu_sigma(pred_matrix) # handles M=1 internally
-        sigma = np.maximum(sigma, 1e-12)              # floor to avoid ties
+        pred_matrix = np.vstack(preds)                
+        mu, sigma   = _ensemble_mu_sigma(pred_matrix) 
+        sigma = np.maximum(sigma, 1e-12)              
 
-        # --- acquisition (negated-mean convention → argmin) ---
+        # acquisition
         f_best = float(np.max(y_train))
-        dummy  = _SkoptDummy(mean=mu, std=sigma)  # exposes (-mu, σ)
+        dummy  = _SkoptDummy(mean=mu, std=sigma)
         acq_vals = gaussian_lcb(mu.reshape(-1, 1), dummy, kappa=kappa, return_grad=False)
         acq_vals = np.asarray(acq_vals).ravel()
         acq_history.append(acq_vals)
 
-        order      = np.argsort(acq_vals)            # ascending → pick smallest
+        order      = np.argsort(acq_vals)           
         best_local = order[:batch]
         next_idx   = [test_ind[i] for i in best_local]
 
-        # --- diagnostics on ensemble mean ---
+        # diagnostics on ensemble mean
         r2   = r2_score(y_test, mu)
         mse  = mean_squared_error(y_test, mu)
         pear, p_val = safe_pearson(y_test, mu)
@@ -200,7 +198,6 @@ def PAM_regression_SVMEns(kappa=1.44, *, save_csv=False, verbose=False,
                   ", mu_pred =", mu[best_local].tolist(),
                   ", sigma_pred =", sigma[best_local].tolist())
 
-        # --- pool update & early stop ---
         train_ind.extend(next_idx)
         test_ind = [ix for ix in test_ind if ix not in next_idx]
         if to_break and (Y[next_idx] == Y_global_max).any():
@@ -222,7 +219,6 @@ def PAM_regression_SVMEns(kappa=1.44, *, save_csv=False, verbose=False,
             run_min, acq_history]
 
 def PAM_regression_RFEns(kappa=1.44, *, save_csv=False, verbose=False,
-                         # search & ensemble knobs
                          tuned_parameters=None, inner_nsplits=10,
                          B=25,                          
                          n_estimators=500, max_depth=None, min_samples_leaf=1,
@@ -232,7 +228,7 @@ def PAM_regression_RFEns(kappa=1.44, *, save_csv=False, verbose=False,
 
     random.seed(seed); np.random.seed(seed)
 
-    # Default RF grid (kept small; expand or switch to RandomizedSearchCV if needed)
+    # Default RF grid
     if tuned_parameters is None:
         tuned_parameters = dict(
             n_estimators=[300, 500, 800],
@@ -248,20 +244,18 @@ def PAM_regression_RFEns(kappa=1.44, *, save_csv=False, verbose=False,
     start = time.time(); loop_count = 0; j = 0
 
     while test_ind:
-        # RF does not need scaling; use raw features
         X_tr_raw = X_raw[train_ind].astype(np.float64, copy=False)
         X_te_raw = X_raw[test_ind].astype(np.float64,  copy=False)
         y_train  = Y[train_ind].astype(np.float64,    copy=False)
         y_test   = Y[test_ind].astype(np.float64,     copy=False)
         last_max = float(np.max(y_train))
 
-        # --- hyperparameter search with CV (guard small train size) ---
+        # hyperparameter search with CV
         n_tr = len(train_ind)
         cv_splits = max(2, min(inner_nsplits, n_tr))
         inner_cv = KFold(n_splits=cv_splits, shuffle=True, random_state=j)
 
         base_rf = RandomForestRegressor(
-            # NOTE: n_estimators here is only used if not in tuned_parameters
             n_estimators=n_estimators,
             max_depth=max_depth,
             min_samples_leaf=min_samples_leaf,
@@ -280,48 +274,43 @@ def PAM_regression_RFEns(kappa=1.44, *, save_csv=False, verbose=False,
             verbose=int(bool(verbose))
         )
         rf_cv.fit(X_tr_raw, y_train)
-        best_rf = rf_cv.best_estimator_   # already fitted on full TRAIN folds
+        best_rf = rf_cv.best_estimator_ 
 
         if verbose:
             print("Best RF params:", rf_cv.best_params_)
 
-        # --- uncertainty via ensemble of forests (B) or per-tree (fallback) ---
+        # uncertainty via ensemble of forests (B) or per-tree
         if B >= 2:
-            # Bag B forests with bootstrap of TRAIN to get between-forest σ
             preds = []
             for b in range(B):
                 boot_idx = np.random.RandomState(seed + b).choice(n_tr, size=n_tr, replace=True)
                 rf_b = clone(best_rf)
-                # re-seed to diversify trees across forests
                 rf_b.set_params(random_state=seed + 1337 + b)
                 rf_b.fit(X_tr_raw[boot_idx], y_train[boot_idx])
                 preds.append(rf_b.predict(X_te_raw))
-            pred_matrix = np.vstack(preds)           # (B, n_test)
+            pred_matrix = np.vstack(preds)
             mu, sigma   = _ensemble_mu_sigma(pred_matrix)
         else:
             # Fast path: per-tree predictive variance from a single forest
-            # (best_rf is fitted by GridSearchCV using the full TRAIN per fold; refit on full TRAIN for determinism)
             rf_1 = clone(best_rf)
-            rf_1.set_params(random_state=seed)       # lock seed
+            rf_1.set_params(random_state=seed)
             rf_1.fit(X_tr_raw, y_train)
-            tree_preds = np.vstack([est.predict(X_te_raw) for est in rf_1.estimators_])  # (n_trees, n_test)
+            tree_preds = np.vstack([est.predict(X_te_raw) for est in rf_1.estimators_])
             mu, sigma  = _ensemble_mu_sigma(tree_preds)
 
-        # numerical floor to avoid zero-σ ties
         sigma = np.maximum(sigma, 1e-12)
 
-        # --- acquisition (negated-mean convention → argmin) ---
+        # acquisition
         f_best = float(np.max(y_train))
         dummy  = _SkoptDummy(mean=mu, std=sigma)
         acq_vals = gaussian_lcb(mu.reshape(-1,1), dummy, kappa=kappa, return_grad=False)
         acq_vals = np.asarray(acq_vals).ravel()
         acq_history.append(acq_vals)
 
-        order = np.argsort(acq_vals)          # ascending → choose smallest
+        order = np.argsort(acq_vals)   
         best_local = order[:batch]
         next_idx   = [test_ind[i] for i in best_local]
 
-        # --- diagnostics on ensemble mean ---
         r2   = r2_score(y_test, mu)
         mse  = mean_squared_error(y_test, mu)
         pear, p_val = safe_pearson(y_test, mu)
@@ -343,7 +332,6 @@ def PAM_regression_RFEns(kappa=1.44, *, save_csv=False, verbose=False,
                   ", mu_pred =", mu[best_local].tolist(),
                   ", sigma_pred =", sigma[best_local].tolist())
 
-        # --- pool update & early stop ---
         train_ind.extend(next_idx)
         test_ind = [ix for ix in test_ind if ix not in next_idx]
         if to_break and (Y[next_idx] == Y_global_max).any():
@@ -416,13 +404,13 @@ def PAM_regression_XGBEns(
             model = xgb.XGBRegressor(**best_params)
             model.fit(X_train[boot_idx], y_train[boot_idx], verbose=False)
             preds.append(model.predict(X_test))
-        pred_matrix = np.vstack(preds)                # (M, n_test)
-        mu, sigma   = _ensemble_mu_sigma(pred_matrix) # mean & std across ensemble
+        pred_matrix = np.vstack(preds)                
+        mu, sigma   = _ensemble_mu_sigma(pred_matrix) 
 
         # 3) Acquisition via skopt (pick *smallest* acq value)
         f_best = float(np.max(y_train))
-        dummy  = _SkoptDummy(mean=mu, std=sigma)  # returns (-mu, sigma)
-        X_cand = mu.reshape(-1, 1)                # shape (n_test, d=1) is fine
+        dummy  = _SkoptDummy(mean=mu, std=sigma)  
+        X_cand = mu.reshape(-1, 1)               
 
         if acq_func.upper() == "LCB":
             acq_vals = gaussian_lcb(X_cand, dummy, kappa=kappa, return_grad=False)
@@ -433,7 +421,7 @@ def PAM_regression_XGBEns(
 
         acq_vals = np.asarray(acq_vals).ravel()
         acq_history.append(acq_vals)
-        order = np.lexsort((np.arange(acq_vals.size), acq_vals))  # argmin
+        order = np.lexsort((np.arange(acq_vals.size), acq_vals)) 
         best_local = order[:batch]
         next_idx   = [test_ind[i] for i in best_local]
 
@@ -464,7 +452,6 @@ def PAM_regression_XGBEns(
         if to_break and (Y[next_idx] == Y_global_max).any():
             break
 
-    # wrap up (unchanged)
     run_min = (time.time() - start) / 60
     saved = "-"
     if save_csv:
@@ -480,7 +467,6 @@ def PAM_regression_GP(kappa=1.44, *, save_csv=False, verbose=False,
                       m_restarts=10, init_train_ind=None, init_test_ind=None,
                       title="gp_run", to_break=True, batch=1, seed=42):
 
-    # For fixing seed
     random.seed(seed)
     np.random.seed(seed)
 
@@ -575,7 +561,7 @@ def PAM_regression_GP(kappa=1.44, *, save_csv=False, verbose=False,
             np.mean(Y[init_train_ind]), np.std(Y[init_train_ind]),
             run_min, acq_history]
 
-# ── Data loading ───────────────────────────────────────────────────────
+# Data loading 
 df_cleaned, X_raw, Y, clean_feature_list, clean_result_col = utils.load_and_clean_data(
     name, feature_col_num=0, target="length"
 )
@@ -587,7 +573,7 @@ Y_global_max   = Y[global_max_ind]
 all_idx        = list(range(total_samp))
 all_idx_wo_max = [i for i in all_idx if i != global_max_ind]
 
-# ── Loops ──────────────────────────────────────────────────────────────
+# Loops 
 inner_loop = 1      # Replace common_split for randomly select initial seeding point
 
 def get_runner(model):
