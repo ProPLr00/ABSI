@@ -26,8 +26,6 @@ Please check the env folder for respective env required for the conda enviroment
 
 ### Data
 
-0. For exact model weight and seed to make sure the per iteration result is repeatable, please refer to [model weight](OneDriveLink).
-
 0. For more detailed description of the dataset, please check out our [paper](#introduction).
 
 ### Code
