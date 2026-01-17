@@ -7,26 +7,25 @@
 ### Table of Contents
 0. [Introduction](#introduction)
 0. [Citation](#citation)
-0. [Enviromental Setup](#environment-setup)
+0. [Environmental Setup](#environment-setup)
 0. [Data](#data)
 0. [Code](#code)
 
 ### Introduction
-This framework - `Adaptive Bayesian Machine Learning with SISSO Interpretation (ABSI)` is dedicated for the explainable-adaptive machine learning pipeline in the paper "Accelerated Discovery of `CrTe Nanowire` with Adaptive Machine Learning" (arxiv link). These models are used for iterative improvement of the `CrTe Nanowire` length task.
+This framework - `Adaptive Bayesian Machine Learning with SISSO Interpretation (ABSI)` is dedicated for the explainable-adaptive machine learning pipeline in the paper "Interpretable Bayesian Optimization workflow for accelerated CVD-growth of ferromagnetic `CrTe nanowires`(arxiv link)". These models are used for iterative improvement of the `CrTe Nanowire` length task.
 
 ### Citation
-If you are going to use these model in your research, please cite: (arxiv link)
+If you are going to use this framework in your research, please cite: (arxiv link)
 
 ### Environment Setup
-Please check the env folder for respective env required for the conda enviroment.
+Please check the env folder for the respective env required for the conda enviroment.
 
-0. For the `Adaptive_BO.ipynb` and other python (.py) files, the env required will be the `enviroment_MT.yml`.
+0. For the `Adaptive_BO.ipynb` and other Python (.py) files, the env required will be the `enviroment_MT.yml`.
 
 0. For the `SISSO_Analysis.ipynb`. the env required will be the `environment_sisso.yml`.
 
 ### Data
-
-0. For more detailed description of the dataset, please check out our [paper](#introduction).
+0. For a more detailed description of the dataset, please check out our [paper](#introduction).
 
 ### Code
 0. Code Structure
